@@ -1,5 +1,8 @@
-import sublime, sublime_plugin
-import re, itertools
+import itertools
+import re
+
+import sublime
+import sublime_plugin
 
 last_index = 0
 hints = []
@@ -306,6 +309,348 @@ class AceJumpCharCommand(AceJumpCommand):
 
         return AceJumpCommand.jump(self, index)
 
+class AceJumpSpaceCommand(AceJumpCommand):
+    """Specialized command for char-mode"""
+
+    def prompt(self):
+        return "Char"
+
+    def init_value(self):
+        return ""
+
+    def regex(self):
+        return r'{}'
+
+    def after_jump(self, view):
+        global mode
+
+        if mode == 3:
+            view.run_command("move", {"by": "characters", "forward": True})
+            mode = 0
+
+    def jump(self, index):
+        global mode
+
+        view = self.changed_views[self.view_for_index(index)]
+        if self.jump_behind_last and "\n" in view.substr(hints[index].end()):
+            mode = 3
+
+        return AceJumpCommand.jump(self, index)
+
+    def on_input(self, command):
+        """Fires the necessary actions for the current input"""
+
+        self.target = command[0]
+
+        self.window.run_command("hide_panel", {"cancel": True})
+
+    def run(self, current_buffer_only = False):
+        global ace_jump_active
+        ace_jump_active = True
+
+        self.char = ""
+        self.target = ""
+        self.views = []
+        self.changed_views = []
+        self.breakpoints = []
+
+        self.all_views = get_active_views(self.window, current_buffer_only)
+        self.syntax = get_views_setting(self.all_views, "syntax")
+        self.sel = get_views_sel(self.all_views)
+
+        settings = sublime.load_settings("AceJump.sublime-settings")
+        self.highlight = settings.get("labels_scope", "invalid")
+        self.labels = settings.get(
+            "labels",
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        )
+        self.case_sensitivity = settings.get("search_case_sensitivity", True)
+        self.jump_behind_last = settings.get("jump_behind_last_characters", False)
+        self.save_files_after_jump = settings.get("save_files_after_jump", False)
+
+        self.view_settings = settings.get("view_settings", [])
+        self.view_values = get_views_settings(
+            self.all_views,
+            self.view_settings
+        )
+
+        self.add_labels(self.regex().format(" "))
+        self.show_prompt(self.prompt(), self.init_value())
+
+class AceJumpLeftBracketCommand(AceJumpCommand):
+    """Specialized command for char-mode"""
+
+    def prompt(self):
+        return "Char"
+
+    def init_value(self):
+        return ""
+
+    def regex(self):
+        return r'{}'
+
+    def after_jump(self, view):
+        global mode
+
+        if mode == 3:
+            view.run_command("move", {"by": "characters", "forward": True})
+            mode = 0
+
+    def jump(self, index):
+        global mode
+
+        view = self.changed_views[self.view_for_index(index)]
+        if self.jump_behind_last and "\n" in view.substr(hints[index].end()):
+            mode = 3
+
+        return AceJumpCommand.jump(self, index)
+
+    def on_input(self, command):
+        """Fires the necessary actions for the current input"""
+
+        self.target = command[0]
+
+        self.window.run_command("hide_panel", {"cancel": True})
+
+    def run(self, current_buffer_only = False):
+        global ace_jump_active
+        ace_jump_active = True
+
+        self.char = ""
+        self.target = ""
+        self.views = []
+        self.changed_views = []
+        self.breakpoints = []
+
+        self.all_views = get_active_views(self.window, current_buffer_only)
+        self.syntax = get_views_setting(self.all_views, "syntax")
+        self.sel = get_views_sel(self.all_views)
+
+        settings = sublime.load_settings("AceJump.sublime-settings")
+        self.highlight = settings.get("labels_scope", "invalid")
+        self.labels = settings.get(
+            "labels",
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        )
+        self.case_sensitivity = settings.get("search_case_sensitivity", True)
+        self.jump_behind_last = settings.get("jump_behind_last_characters", False)
+        self.save_files_after_jump = settings.get("save_files_after_jump", False)
+
+        self.view_settings = settings.get("view_settings", [])
+        self.view_values = get_views_settings(
+            self.all_views,
+            self.view_settings
+        )
+
+        self.add_labels(r"\(|\{|\[")
+        self.show_prompt(self.prompt(), self.init_value())
+
+class AceJumpRightBracketCommand(AceJumpCommand):
+    """Specialized command for char-mode"""
+
+    def prompt(self):
+        return "Char"
+
+    def init_value(self):
+        return ""
+
+    def regex(self):
+        return r'{}'
+
+    def after_jump(self, view):
+        global mode
+
+        if mode == 3:
+            view.run_command("move", {"by": "characters", "forward": True})
+            mode = 0
+
+    def jump(self, index):
+        global mode
+
+        view = self.changed_views[self.view_for_index(index)]
+        if self.jump_behind_last and "\n" in view.substr(hints[index].end()):
+            mode = 3
+
+        return AceJumpCommand.jump(self, index)
+
+    def on_input(self, command):
+        """Fires the necessary actions for the current input"""
+
+        self.target = command[0]
+
+        self.window.run_command("hide_panel", {"cancel": True})
+
+    def run(self, current_buffer_only = False):
+        global ace_jump_active
+        ace_jump_active = True
+
+        self.char = ""
+        self.target = ""
+        self.views = []
+        self.changed_views = []
+        self.breakpoints = []
+
+        self.all_views = get_active_views(self.window, current_buffer_only)
+        self.syntax = get_views_setting(self.all_views, "syntax")
+        self.sel = get_views_sel(self.all_views)
+
+        settings = sublime.load_settings("AceJump.sublime-settings")
+        self.highlight = settings.get("labels_scope", "invalid")
+        self.labels = settings.get(
+            "labels",
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        )
+        self.case_sensitivity = settings.get("search_case_sensitivity", True)
+        self.jump_behind_last = settings.get("jump_behind_last_characters", False)
+        self.save_files_after_jump = settings.get("save_files_after_jump", False)
+
+        self.view_settings = settings.get("view_settings", [])
+        self.view_values = get_views_settings(
+            self.all_views,
+            self.view_settings
+        )
+
+        self.add_labels(r"\)|\}|\]")
+        self.show_prompt(self.prompt(), self.init_value())
+
+class AceJumpSpecialCommand(AceJumpCommand):
+    """Specialized command for char-mode"""
+
+    def prompt(self):
+        return "Char"
+
+    def init_value(self):
+        return ""
+
+    def regex(self):
+        return r'{}'
+
+    def after_jump(self, view):
+        global mode
+
+        if mode == 3:
+            view.run_command("move", {"by": "characters", "forward": True})
+            mode = 0
+
+    def jump(self, index):
+        global mode
+
+        view = self.changed_views[self.view_for_index(index)]
+        if self.jump_behind_last and "\n" in view.substr(hints[index].end()):
+            mode = 3
+
+        return AceJumpCommand.jump(self, index)
+
+    def on_input(self, command):
+        """Fires the necessary actions for the current input"""
+
+        self.target = command[0]
+
+        self.window.run_command("hide_panel", {"cancel": True})
+
+    def run(self, current_buffer_only = False):
+        global ace_jump_active
+        ace_jump_active = True
+
+        self.char = ""
+        self.target = ""
+        self.views = []
+        self.changed_views = []
+        self.breakpoints = []
+
+        self.all_views = get_active_views(self.window, current_buffer_only)
+        self.syntax = get_views_setting(self.all_views, "syntax")
+        self.sel = get_views_sel(self.all_views)
+
+        settings = sublime.load_settings("AceJump.sublime-settings")
+        self.highlight = settings.get("labels_scope", "invalid")
+        self.labels = settings.get(
+            "labels",
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        )
+        self.case_sensitivity = settings.get("search_case_sensitivity", True)
+        self.jump_behind_last = settings.get("jump_behind_last_characters", False)
+        self.save_files_after_jump = settings.get("save_files_after_jump", False)
+
+        self.view_settings = settings.get("view_settings", [])
+        self.view_values = get_views_settings(
+            self.all_views,
+            self.view_settings
+        )
+
+        self.add_labels(r"\.|\,|\:|\=|\+|\@|\*|\\|\/")
+        self.show_prompt(self.prompt(), self.init_value())
+
+class AceJumpQuoteCommand(AceJumpCommand):
+    """Specialized command for char-mode"""
+
+    def prompt(self):
+        return "Char"
+
+    def init_value(self):
+        return ""
+
+    def regex(self):
+        return r'{}'
+
+    def after_jump(self, view):
+        global mode
+
+        if mode == 3:
+            view.run_command("move", {"by": "characters", "forward": True})
+            mode = 0
+
+    def jump(self, index):
+        global mode
+
+        view = self.changed_views[self.view_for_index(index)]
+        if self.jump_behind_last and "\n" in view.substr(hints[index].end()):
+            mode = 3
+
+        return AceJumpCommand.jump(self, index)
+
+    def on_input(self, command):
+        """Fires the necessary actions for the current input"""
+
+        self.target = command[0]
+
+        self.window.run_command("hide_panel", {"cancel": True})
+
+    def run(self, current_buffer_only = False):
+        global ace_jump_active
+        ace_jump_active = True
+
+        self.char = ""
+        self.target = ""
+        self.views = []
+        self.changed_views = []
+        self.breakpoints = []
+
+        self.all_views = get_active_views(self.window, current_buffer_only)
+        self.syntax = get_views_setting(self.all_views, "syntax")
+        self.sel = get_views_sel(self.all_views)
+
+        settings = sublime.load_settings("AceJump.sublime-settings")
+        self.highlight = settings.get("labels_scope", "invalid")
+        self.labels = settings.get(
+            "labels",
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        )
+        self.case_sensitivity = settings.get("search_case_sensitivity", True)
+        self.jump_behind_last = settings.get("jump_behind_last_characters", False)
+        self.save_files_after_jump = settings.get("save_files_after_jump", False)
+
+        self.view_settings = settings.get("view_settings", [])
+        self.view_values = get_views_settings(
+            self.all_views,
+            self.view_settings
+        )
+
+        self.add_labels(r"\'|\"")
+        self.show_prompt(self.prompt(), self.init_value())
+
+
+
 class AceJumpLineCommand(AceJumpCommand):
     """Specialized command for line-mode"""
 
@@ -348,6 +693,49 @@ class AceJumpWithinLineCommand(AceJumpCommand):
     def get_region_type(self):
 
         return "current_line"
+
+class AceJumpSelectWithinLineCommand(AceJumpCommand):
+    """Specialized command for within-line-mode"""
+
+    def prompt(self):
+        return ""
+
+    def init_value(self):
+        return " "
+
+    def regex(self):
+        return r'\b\w'
+
+    def after_jump(self, view):
+        global mode
+
+        # reset mode to not select afterward
+        mode = 0
+
+    def get_region_type(self):
+
+        return "current_line"
+
+    def on_input(self, command):
+        """Fires the necessary actions for the current input"""
+
+        global mode
+
+        mode = 1
+
+        if len(command) == 1:
+            self.char = command
+            if self.char == "<" or self.char == ">":
+                # re.escape escapes these 2 characters but it isn't needed for view.find()
+                self.add_labels(self.regex().format(self.char))
+            else:
+                self.add_labels(self.regex().format(re.escape(self.char)))
+            return
+
+        if len(command) == 2:
+            self.target = command[1]
+
+        self.window.run_command("hide_panel", {"cancel": True})
 
 class AceJumpSelectCommand(sublime_plugin.WindowCommand):
     """Command for turning on select mode"""
