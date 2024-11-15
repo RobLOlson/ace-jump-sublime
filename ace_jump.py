@@ -390,7 +390,6 @@ class AceJumpSpaceCommand(AceJumpCommand):
 
         set_views_settings(self.all_views, self.view_settings, self.view_values)
 
-
     def run(self, current_buffer_only=False):
         global ace_jump_active
         ace_jump_active = True
@@ -479,7 +478,7 @@ class AceJumpSelectSpaceCommand(AceJumpCommand):
         self.view_settings = settings.get("view_settings", [])
         self.view_values = get_views_settings(self.all_views, self.view_settings)
 
-        self.add_labels(self.regex().format(r"\s"))
+        self.add_labels(self.regex().format(r"( |\t)+"))
         self.show_prompt(self.prompt(), self.init_value())
 
 
@@ -1151,7 +1150,6 @@ class AddAceJumpLabelsCommand(sublime_plugin.TextCommand):
             self.view.replace(edit, regions[i], labels[last_index + i - len(regions)])
             # self.view.replace(edit, regions[i], "i"*length)
             # self.view.replace(edit, regions[i], labels[last_index + i - len(regions)]) ORIGINAL
-
 
     def get_target_region(self, region_type):
         return {
